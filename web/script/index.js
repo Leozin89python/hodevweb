@@ -382,12 +382,11 @@ async function handleFormSubmit(event) {
 // ============================
 document.getElementById("send").addEventListener("click", handleFormSubmit);
 
-<<<<<<< HEAD
 document.querySelector(".nav__toggle").addEventListener("click", (e) => {
   e.preventDefault();
   console.log(e.target);
 })
-=======
+
 // ============================
 // terms
 // ============================
@@ -498,4 +497,3 @@ function acceptedOrNotTerms(acceptOrNot) {
   }
 }
 
->>>>>>> 23784cacd629ead92c7a0930a607b5ce32a4a353
