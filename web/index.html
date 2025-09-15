@@ -65,6 +65,42 @@
     </div>
   </header>
 
+  <!-- LGPD MODAL -->
+  <div class="lgpd-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="lgpdTitle">
+    <div class="lgpd-modal">
+      <div class="lgpd-header">
+        <div class="lgpd-logo">HW</div>
+        <div>
+          <div id="lgpdTitle" class="lgpd-title">Termos de Uso e Tratamento de Dados (LGPD)</div>
+          <div class="lgpd-subtitle">hodevweb.com.br — coleta limitada para contato futuro</div>
+        </div>
+      </div>
+  
+      <div class="lgpd-body">
+        <p>Ao aceitar, você concorda que os dados que fornecer no formulário de contato (nome, e-mail e mensagem) serão armazenados e utilizados apenas para fins de comunicação futura relacionada ao seu contato. Esta base legal fundamenta-se no <strong>consentimento</strong> (Art. 7º, LGPD).</p>
+  
+        <ul class="lgpd-points">
+          <li><strong>Finalidade:</strong> responder seu contato e enviar comunicações relacionadas.</li>
+          <li><strong>Limitação:</strong> apenas dados do formulário serão captados.</li>
+          <li><strong>Retenção:</strong> guardaremos seus dados pelo tempo necessário.</li>
+          <li><strong>Seus direitos:</strong> acesso, correção, exclusão, revogação do consentimento — contate <a class="link" href="mailto:comercial@hodevweb.com.br">comercial@hodevweb.com.br</a>.</li>
+        </ul>
+  
+        <div class="lgpd-check">
+          <input type="checkbox" id="lgpdAcceptCheck">
+          <label for="lgpdAcceptCheck">Eu li e aceito que meus dados sejam usados conforme descrito acima.</label>
+        </div>
+
+      </div>
+  
+      <div class="lgpd-actions">
+        <button id="lgpdDecline" class="lgpd-btn lgpd-decline" type="button">Recusar</button>
+        <button id="lgpdAccept" onclick="handleFormSubmit(event)" class="lgpd-btn lgpd-accept" type="button">Aceitar e salvar</button>
+      </div>
+    </div>
+  </div>
+   <!-- LGPD MODAL -->
+
   <!-- Modal de Projetos -->
   <div id="projectsModal" class="modal">
     <div class="modal__overlay"></div>
@@ -275,11 +311,6 @@
             Enviar
           </button>
         </form>
-
-        <!-- botão para testar o modal -->
-        <button onclick="openTerms(event)" style="padding: 10px; margin: 5px; border-radius: 6%; background-color: brown; color: aliceblue; cursor: pointer;">
-          Teste de modal (abri)
-        </button>
 
         <!-- ALERTA ESPECIALIZADO -->
         <div id="formAlert" class="form-alert hidden">
