@@ -1,3 +1,8 @@
+const nameInput = document.getElementById("nome");
+const emailInput = document.getElementById("email");
+const phoneInput = document.getElementById("tel");
+const messageInput = document.getElementById("msg");
+const check = document.querySelector("#lgpdAcceptCheck");
 // =======================
 // Entities + Builder
 // =======================
@@ -285,25 +290,38 @@ class EmailService {
     const templateParams = {
       name,
       email,
-      phone: phone,
+      phone,
       timestamp: new Date().toLocaleString("pt-BR"),
       message: message,
     };
 
-    try {
-      openTerms();
-    } catch (error) {
-      console.error("Erro ao abrir modal de LGPD:", error);
-      showFormAlert("error", "Erro ao abrir modal de LGPD.");
-    }
+    openTerms();
 
     try {
-      // const response = await emailjs.send(
-      //   this.serviceId,
-      //   this.templateId,
-      //   templateParams
-      // );
-      // return { success: true, response };
+      if (
+        checkIfFormFieldIsEmptyOrIsValid().result === false ||
+        checkIfLgpdBoxIsMarked().result === false
+      ) {
+        console.log(
+          "checkIfFormFieldIsEmptyOrIsValid: ",
+          checkIfFormFieldIsEmptyOrIsValid().result
+        );
+        console.log(
+          "checkIfLgpdBoxIsMarked: ",
+          checkIfLgpdBoxIsMarked().result
+        );
+        closeTerms();
+        showError(check, "É necessário aceitar os termos para envio!");
+        return { success: false };
+      }
+      const response = await emailjs.send(
+        this.serviceId,
+        this.templateId,
+        templateParams
+      );
+
+      //envia após as verificações mais retorna uma mensagem de erro
+      return { success: true, response };
     } catch (error) {
       console.error("Erro ao enviar email:", error);
       return { success: false, error };
@@ -317,11 +335,87 @@ class EmailService {
 async function handleFormSubmit(event) {
   event.preventDefault();
 
-  const nameInput = document.getElementById("nome");
-  const emailInput = document.getElementById("email");
-  const phoneInput = document.getElementById("tel");
-  const messageInput = document.getElementById("msg");
+  const emailService = new EmailService(
+    "service_yq8he0m",
+    "template_ciu2478",
+    "K2JLEx06aJ9iVaPlK"
+  );
 
+  const result = await emailService.sendEmail({
+    name: nameInput.value,
+    email: emailInput.value,
+    phone: phoneInput.value,
+    message: messageInput.value,
+  });
+
+  if (result.success === true) {
+    closeTerms();
+    clearFormFields(nameInput, emailInput, phoneInput, messageInput);
+    showFormAlert("success", "Formulário enviado com sucesso!");
+  }
+  if (result.success === false) {
+    /**Não precisa fazer nada pois a função ao verificar
+     * se os campos estão vazios ou válidos, chama o alert e chama a
+     * funcção  closeTerms();.
+     */
+  } else {
+    showFormAlert(
+      "error",
+      "Falha ao enviar mensagem. Tente novamente mais tarde."
+    );
+  }
+
+  console.log("result: " + result);
+  console.log("success: " + result.success);
+}
+
+// ============================
+// Init
+// ============================
+document.getElementById("send").addEventListener("click", openTerms);
+
+document.querySelector(".nav__toggle").addEventListener("click", (e) => {
+  e.preventDefault();
+  console.log(e.target);
+});
+
+// ============================
+// terms
+// ============================
+
+function openTerms(e) {
+  e?.preventDefault();
+  const terms = document.querySelector(".lgpd-overlay");
+  terms.classList.remove("hidden");
+  terms.classList.add("visible");
+}
+
+document.querySelector("#lgpdDecline").addEventListener("click", (e) => {
+  e.preventDefault();
+  closeTerms();
+});
+
+function closeTerms() {
+  const terms = document.querySelector(".lgpd-overlay");
+  terms.classList.remove("visible");
+  terms.classList.add("hidden");
+}
+
+document.querySelector("#lgpdAcceptCheck").addEventListener("change", (e) => {
+  e.preventDefault();
+  console.log(checkIfLgpdBoxIsMarked());
+});
+
+function checkIfLgpdBoxIsMarked() {
+  const check = document.querySelector("#lgpdAcceptCheck");
+
+  if (!check.checked) {
+    return { result: false };
+  }
+
+  return { result: true };
+}
+function checkIfFormFieldIsEmptyOrIsValid() {
   const name = sanitizeName(nameInput.value);
   const email = sanitizeEmail(emailInput.value);
   const phone = sanitizePhone(phoneInput.value);
@@ -355,74 +449,11 @@ async function handleFormSubmit(event) {
   if (!isValidMessage(message)) {
     showError(messageInput, "A mensagem deve ter pelo menos 5 caracteres.");
     isValid = false;
-  } else clearError(messageInput);
+  } else {
+    clearError(messageInput);
+  }
 
-  if (!isValid) return;
+  if (!isValid) return { result: false };
 
-  const emailService = new EmailService(
-    "service_yq8he0m",
-    "template_ciu2478",
-    "K2JLEx06aJ9iVaPlK"
-  );
-
-  const result = await emailService.sendEmail({
-    name,
-    email,
-    phone,
-    message,
-  });
-  // console.log(result);
-
-  // if (result.success) {
-  //   clearFormFields(nameInput, emailInput, phoneInput, messageInput);
-  //   showFormAlert("success", "Formulário enviado com sucesso!");
-  // } else {
-  //   showFormAlert(
-  //     "error",
-  //     "Falha ao enviar mensagem. Tente novamente mais tarde."
-  //   );
-  // }
-}
-
-// ============================
-// Init
-// ============================
-document.getElementById("send").addEventListener("click", openTerms);
-
-document.querySelector(".nav__toggle").addEventListener("click", (e) => {
-  e.preventDefault();
-  console.log(e.target);
-});
-
-// ============================
-// terms
-// ============================
-
-function openTerms(e) {
-  e.preventDefault();
-  const terms = document.querySelector(".lgpd-overlay");
-  terms.classList.remove("hidden");
-  terms.classList.add("visible");
-}
-
-document.querySelector("#lgpdDecline").addEventListener("click", (e) => {
-  e.preventDefault();
-  closeTerms();
-});
-
-function closeTerms() {
-  const terms = document.querySelector(".lgpd-overlay");
-  terms.classList.remove("visible");
-  terms.classList.add("hidden");
-}
-
-document.querySelector("#lgpdAcceptCheck").addEventListener("change", (e) => {
-  e.preventDefault();
-  console.log(checkIfLgpdBoxIsMarked());
-});
-
-function checkIfLgpdBoxIsMarked() {
-  const check = document.querySelector("#lgpdAcceptCheck");
-  if (check.checked) return true;
-  if (!check.checked) return false;
+  return { result: true };
 }

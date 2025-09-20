@@ -16,13 +16,10 @@ describe("Formulário de Contato - Hodevweb", () => {
     cy.get("#send").click();
 
     // Modal de LGPD deve aparecer
-    cy.get("#terms-modal").should("exist");
+    cy.get(".lgpd-overlay").should("exist");
 
     // Marca checkbox
     cy.get("#lgpdAcceptCheck").check({ force: true });
-
-    // Ativa botão de aceitar
-    cy.get("#lgpdAccept").should("not.be.disabled").click();
 
     // Confirma que aparece mensagem de sucesso
     cy.get("#formAlert")
