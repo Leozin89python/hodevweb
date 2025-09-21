@@ -1,3 +1,8 @@
+const nameInput = document.getElementById("nome");
+const emailInput = document.getElementById("email");
+const phoneInput = document.getElementById("tel");
+const messageInput = document.getElementById("msg");
+const check = document.querySelector("#lgpdAcceptCheck");
 // =======================
 // Entities + Builder
 // =======================
@@ -273,6 +278,7 @@ if (alertCloseBtn) alertCloseBtn.addEventListener("click", hideFormAlert);
 // ============================
 // Email Service (SRP: só envia email)
 // ============================
+// precisa limpar essa classe (realizar a depuração)
 class EmailService {
   constructor(serviceId, templateId, publicKey) {
     this.serviceId = serviceId;
@@ -285,17 +291,30 @@ class EmailService {
     const templateParams = {
       name,
       email,
-      phone: phone,
+      phone,
       timestamp: new Date().toLocaleString("pt-BR"),
       message: message,
     };
 
+    openTerms();
+
     try {
+      if (checkIfFormFieldIsEmptyOrIsValid().result === false) {
+        checkIfFormFieldIsEmptyOrIsValid();
+        closeTerms();
+        return { success: false };
+      }
+      if (checkIfLgpdBoxIsMarked().result === false) {
+        closeTerms();
+        showError(check, "É necessário aceitar os termos para envio!");
+        return { success: false };
+      }
       const response = await emailjs.send(
         this.serviceId,
         this.templateId,
         templateParams
       );
+
       return { success: true, response };
     } catch (error) {
       console.error("Erro ao enviar email:", error);
@@ -310,11 +329,85 @@ class EmailService {
 async function handleFormSubmit(event) {
   event.preventDefault();
 
-  const nameInput = document.getElementById("nome");
-  const emailInput = document.getElementById("email");
-  const phoneInput = document.getElementById("tel");
-  const messageInput = document.getElementById("msg");
+  const emailService = new EmailService(
+    "service_yq8he0m",
+    "template_ciu2478",
+    "K2JLEx06aJ9iVaPlK"
+  );
 
+  const result = await emailService.sendEmail({
+    name: nameInput.value,
+    email: emailInput.value,
+    phone: phoneInput.value,
+    message: messageInput.value,
+  });
+
+  console.log(result.success);
+
+  if (result.success === true) {
+    closeTerms();
+    clearFormFields(nameInput, emailInput, phoneInput, messageInput);
+    showFormAlert("success", "Formulário enviado com sucesso!");
+  }
+  else if (result.success === false)   {
+   /**
+    * Não é necessário fazer nada á verificação já executa todo o necessário
+    */
+  }
+  else {
+    showFormAlert(
+      "error",
+      "Falha ao enviar mensagem. Tente novamente mais tarde."
+    );
+  }
+}
+
+// ============================
+// Init
+// ============================
+document.getElementById("send").addEventListener("click", openTerms);
+
+document.querySelector(".nav__toggle").addEventListener("click", (e) => {
+  e.preventDefault();
+});
+
+// ============================
+// terms
+// ============================
+
+function openTerms(e) {
+  e?.preventDefault();
+  const terms = document.querySelector(".lgpd-overlay");
+  terms.classList.remove("hidden");
+  terms.classList.add("visible");
+}
+
+document.querySelector("#lgpdDecline").addEventListener("click", (e) => {
+  e.preventDefault();
+  closeTerms();
+  showError(check, "É necessário aceitar os termos para envio!");
+});
+
+function closeTerms() {
+  const terms = document.querySelector(".lgpd-overlay");
+  terms.classList.remove("visible");
+  terms.classList.add("hidden");
+}
+
+document.querySelector("#lgpdAcceptCheck").addEventListener("change", (e) => {
+  e.preventDefault();
+});
+
+function checkIfLgpdBoxIsMarked() {
+  const check = document.querySelector("#lgpdAcceptCheck");
+
+  if (!check.checked) {
+    return { result: false };
+  }
+
+  return { result: true };
+}
+function checkIfFormFieldIsEmptyOrIsValid() {
   const name = sanitizeName(nameInput.value);
   const email = sanitizeEmail(emailInput.value);
   const phone = sanitizePhone(phoneInput.value);
@@ -348,36 +441,11 @@ async function handleFormSubmit(event) {
   if (!isValidMessage(message)) {
     showError(messageInput, "A mensagem deve ter pelo menos 5 caracteres.");
     isValid = false;
-  } else clearError(messageInput);
-
-  if (!isValid) return;
-
-  const emailService = new EmailService(
-    "service_yq8he0m",
-    "template_ciu2478",
-    "K2JLEx06aJ9iVaPlK"
-  );
-
-  const result = await emailService.sendEmail({
-    name,
-    email,
-    phone,
-    message,
-  });
-  console.log(result);
-
-  if (result.success) {
-    clearFormFields(nameInput, emailInput, phoneInput, messageInput);
-    showFormAlert("success", "Formulário enviado com sucesso!");
   } else {
-    showFormAlert(
-      "error",
-      "Falha ao enviar mensagem. Tente novamente mais tarde."
-    );
+    clearError(messageInput);
   }
-}
 
-// ============================
-// Init
-// ============================
-document.getElementById("send").addEventListener("click", handleFormSubmit);
+  if (!isValid) return { result: false };
+
+  return { result: true };
+}

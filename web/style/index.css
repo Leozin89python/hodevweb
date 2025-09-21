@@ -13,9 +13,11 @@
   --purple: #6c5ce7;
   --blue: #2d9cdb;
   --gradient-hero: linear-gradient(135deg, #6c5ce7 0%, #2d9cdb 100%);
-  --gradient-card: linear-gradient(135deg,
-      rgba(108, 92, 231, 0.18),
-      rgba(45, 156, 219, 0.18));
+  --gradient-card: linear-gradient(
+    135deg,
+    rgba(108, 92, 231, 0.18),
+    rgba(45, 156, 219, 0.18)
+  );
   --gradient-price: linear-gradient(135deg, #6146ff 0%, #4b7bff 100%);
   --radius-lg: 22px;
   --radius-xl: 26px;
@@ -37,9 +39,12 @@ body.page {
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto,
     "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
   color: var(--text);
-  background: radial-gradient(1200px 500px at 50% -200px,
+  background: radial-gradient(
+      1200px 500px at 50% -200px,
       #0f2250 0%,
-      var(--bg) 50%) fixed;
+      var(--bg) 50%
+    )
+    fixed;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -208,9 +213,11 @@ body.page {
      ========================================================================== */
 .hero {
   padding: clamp(48px, 8vw, 80px) 0 clamp(36px, 6vw, 64px);
-  background: radial-gradient(900px 420px at 70% 0%,
-      rgba(108, 92, 231, 0.26),
-      transparent 60%);
+  background: radial-gradient(
+    900px 420px at 70% 0%,
+    rgba(108, 92, 231, 0.26),
+    transparent 60%
+  );
 }
 
 .hero__container {
@@ -220,11 +227,11 @@ body.page {
   align-items: center;
 }
 
-.hero__container>*:first-child {
+.hero__container > *:first-child {
   flex: 1.1;
 }
 
-.hero__container>*:last-child {
+.hero__container > *:last-child {
   flex: 0.9;
 }
 
@@ -371,9 +378,6 @@ body.page {
   color: inherit;
 }
 
-/* ==============================
-   Projects Grid
-   ============================== */
 .projects__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -447,8 +451,6 @@ body.page {
     transform: translateY(0);
   }
 }
-
-
 
 /* ==========================================================================
      Pricing
@@ -526,7 +528,7 @@ body.page {
   gap: 22px;
 }
 
-.portfolio__grid>* {
+.portfolio__grid > * {
   flex: 1;
 }
 
@@ -538,9 +540,11 @@ body.page {
 .portfolio__thumb {
   height: 160px;
   border-radius: 16px;
-  background: radial-gradient(90% 100% at 100% 0%,
+  background: radial-gradient(
+      90% 100% at 100% 0%,
       rgba(108, 92, 231, 0.35),
-      rgba(45, 156, 219, 0.18)),
+      rgba(45, 156, 219, 0.18)
+    ),
     #0a132a;
   display: flex;
   align-items: center;
@@ -571,7 +575,7 @@ body.page {
   gap: 36px;
 }
 
-.about-contact__container>* {
+.about-contact__container > * {
   flex: 1;
 }
 
@@ -671,7 +675,8 @@ body.page {
   }
 
   .nav__toggle {
-    display: inline-flex;
+    display: flex;
+    flex-direction: column;
   }
 
   .nav__list {
@@ -782,4 +787,51 @@ footer {
   cursor: pointer;
   margin-left: 12px;
   color: inherit;
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.6);
+  height: 100vh;
+  width: 100vw;
+  z-index: 10;
+  top: 0;
+  left: 0;
+}
+
+.lgpd-modal {
+  background: whitesmoke;
+  color: #1b1940;
+  padding: 3rem;
+  border-radius: 6px;
+}
+
+.lgpd-modal a {
+  text-decoration: none;
+  color: #1b1940;
+  font-weight: bold;
+}
+
+.lgpd-modal button {
+  padding: 1rem;
+  background: #1b1940;
+  color: whitesmoke;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+@media screen and (max-width: 640px) {
+  .visible {
+    padding: 0;
+  }
 }
