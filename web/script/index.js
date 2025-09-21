@@ -278,6 +278,7 @@ if (alertCloseBtn) alertCloseBtn.addEventListener("click", hideFormAlert);
 // ============================
 // Email Service (SRP: só envia email)
 // ============================
+// precisa limpar essa classe (realizar a depuração)
 class EmailService {
   constructor(serviceId, templateId, publicKey) {
     this.serviceId = serviceId;
@@ -314,7 +315,6 @@ class EmailService {
         templateParams
       );
 
-      //envia após as verificações mais retorna uma mensagem de erro
       return { success: true, response };
     } catch (error) {
       console.error("Erro ao enviar email:", error);
@@ -349,12 +349,12 @@ async function handleFormSubmit(event) {
     clearFormFields(nameInput, emailInput, phoneInput, messageInput);
     showFormAlert("success", "Formulário enviado com sucesso!");
   }
-  if (result.success === false) {
-    /**Não precisa fazer nada pois a função ao verificar
-     * se os campos estão vazios ou válidos, chama o alert e chama a
-     * funcção  closeTerms();.
-     */
-  } else {
+  else if (result.success === false)   {
+   /**
+    * Não é necessário fazer nada á verificação já executa todo o necessário
+    */
+  }
+  else {
     showFormAlert(
       "error",
       "Falha ao enviar mensagem. Tente novamente mais tarde."
