@@ -298,18 +298,12 @@ class EmailService {
     openTerms();
 
     try {
-      if (
-        checkIfFormFieldIsEmptyOrIsValid().result === false ||
-        checkIfLgpdBoxIsMarked().result === false
-      ) {
-        console.log(
-          "checkIfFormFieldIsEmptyOrIsValid: ",
-          checkIfFormFieldIsEmptyOrIsValid().result
-        );
-        console.log(
-          "checkIfLgpdBoxIsMarked: ",
-          checkIfLgpdBoxIsMarked().result
-        );
+      if (checkIfFormFieldIsEmptyOrIsValid().result === false) {
+        checkIfFormFieldIsEmptyOrIsValid();
+        closeTerms();
+        return { success: false };
+      }
+      if (checkIfLgpdBoxIsMarked().result === false) {
         closeTerms();
         showError(check, "É necessário aceitar os termos para envio!");
         return { success: false };
@@ -348,6 +342,8 @@ async function handleFormSubmit(event) {
     message: messageInput.value,
   });
 
+  console.log(result.success);
+
   if (result.success === true) {
     closeTerms();
     clearFormFields(nameInput, emailInput, phoneInput, messageInput);
@@ -364,9 +360,6 @@ async function handleFormSubmit(event) {
       "Falha ao enviar mensagem. Tente novamente mais tarde."
     );
   }
-
-  console.log("result: " + result);
-  console.log("success: " + result.success);
 }
 
 // ============================
@@ -376,7 +369,6 @@ document.getElementById("send").addEventListener("click", openTerms);
 
 document.querySelector(".nav__toggle").addEventListener("click", (e) => {
   e.preventDefault();
-  console.log(e.target);
 });
 
 // ============================
@@ -393,6 +385,7 @@ function openTerms(e) {
 document.querySelector("#lgpdDecline").addEventListener("click", (e) => {
   e.preventDefault();
   closeTerms();
+  showError(check, "É necessário aceitar os termos para envio!");
 });
 
 function closeTerms() {
@@ -403,7 +396,6 @@ function closeTerms() {
 
 document.querySelector("#lgpdAcceptCheck").addEventListener("change", (e) => {
   e.preventDefault();
-  console.log(checkIfLgpdBoxIsMarked());
 });
 
 function checkIfLgpdBoxIsMarked() {

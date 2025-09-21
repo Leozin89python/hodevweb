@@ -2,7 +2,7 @@
 
 describe("Formulário de Contato - Hodevweb", () => {
   beforeEach(() => {
-    cy.visit("http://127.0.0.1:5500/web/index.html"); // ajuste se rodar em outra porta
+    cy.visit(`http://${baseUrl}:5500/web/index.html`); // ajuste se rodar em outra porta
   });
 
   it("Deve preencher e enviar o formulário com sucesso", () => {
@@ -21,12 +21,26 @@ describe("Formulário de Contato - Hodevweb", () => {
     // Marca checkbox
     cy.get("#lgpdAcceptCheck").check({ force: true });
 
+    // Envia os dados ao servidor
+    cy.get("#lgpdAccept").click();
+
+    // Intercepta o POST enviado ao EmailJS
+    cy.intercept("POST", "https://api.emailjs.com/api/v1.0/email/send").as(
+      "emailSend"
+    );
+
+    // Espera a resposta e valida status
+    cy.wait("@emailSend").then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+      expect(interception.response.statusMessage).to.eq("OK");
+    });
+
     // Confirma que aparece mensagem de sucesso
-    cy.get("#formAlert")
-      .should("exist")
-      .and("have.class", "success");
-    cy.get("#formAlertMessage")
-      .should("contain.text", "Formulário enviado com sucesso!");
+    cy.get("#formAlert").should("exist").and("have.class", "success");
+    cy.get("#formAlertMessage").should(
+      "contain.text",
+      "Formulário enviado com sucesso!"
+    );
   });
 
   it("Deve exibir erro se tentar enviar sem preencher os campos", () => {
